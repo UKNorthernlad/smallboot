@@ -12,11 +12,12 @@ Add required VSCode extensions:
 Add required dev tools:
 
 * FASM = Flat Assembler
+* NASM = Netwide Assembler (https://nasm.us)
 * QEMU = Quick Emulator
 
 ```
-sudo apt install fasm qemu
+sudo apt install fasm nasm qemu
 ```
-
+You don't need both fasm & nasm but having them both might be useful in the future.
 
 

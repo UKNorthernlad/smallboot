@@ -35,3 +35,9 @@ Basic ways to manipulate memory
 make memory
 make memoryrun
 ```
+
+Print a basic "hello world" message by booting of a disk but using a function call and stack.
+```
+make hellocall
+make runhellocall
+```

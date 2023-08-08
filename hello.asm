@@ -1,5 +1,6 @@
 use16       ; produce 16 bit code
-org 0x7c00  ; assume code will be loaded at memory location 0x7c00. This is where the BIOS expects it to be.
+;bits 16 ; when using NASM as the assembler.
+org 0x7c00  ; assume code will be loaded at memory location 0x7c00. This is where the BIOS expects it to be and all offsets are calculated from this address.
 
 ; The BIOS has a number of interrupt routines that can perform tasks needed for startup, e.g. print on the screen.
 ; These can be triggered by either hardware or software calls with the "int" instruction.
@@ -40,8 +41,8 @@ halt:
     hlt ; halt the system
 
 msg:
-    db "Hello world!",0
+    db "Hello world!",0 ; "db" = declare byte (or byte string).
 
 times 510 - ($-$$) db 0 ; Write out 510 null bytes. The ($-$$) bit is a count of the number of bytes written out already. If that was say 10, it would mean that only 500 null bytes are written. This keeps the total bytes written out to 512 regardless of the number written out already.
-dw 0xaa55 ; The magic byte sequence to mark this sector as bootable.
+dw 0xaa55 ; Declare word (dw) writes a 2-byte sequence to set the magic number of mark this sector as bootable.
 

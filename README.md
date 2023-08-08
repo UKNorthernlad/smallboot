@@ -29,3 +29,9 @@ Print a basic "hello world" message by booting of a disk.
 make hello
 make runhello
 ```
+
+Basic ways to manipulate memory 
+```
+make memory
+make memoryrun
+```

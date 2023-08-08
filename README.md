@@ -22,4 +22,10 @@ sudo apt install fasm nasm qemu
 ```
 You don't need both fasm & nasm but having them both might be useful in the future.
 
+## Examples
 
+Print a basic "hello world" message by booting of a disk.
+```
+make hello
+make runhello
+```

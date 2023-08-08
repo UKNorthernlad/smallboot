@@ -5,16 +5,16 @@ org 0x7c00  ; assume code will be loaded at memory location 0x7c00. This is wher
 ; These can be triggered by either hardware or software calls with the "int" instruction.
 ; These are documented at https://en.wikipedia.org/wiki/BIOS_interrupt_call
 
-; Some interrupts can have a paramter passed on the "ah" register to provide more fine grained control,
+; Some interrupts can have a parameter passed on the "ah" register to provide more fine grained control,
 
-; Example
- ;mov ah, 0x0e    ; function number = 0Eh : Display Character on screen
- ;mov al, '!'     ; AL = code of character to display. This is like the parameter to the interrupt.
- ;int 0x10        ; call INT 10h, BIOS video service https://en.wikipedia.org/wiki/INT_10H
-; 
+;Example
+;=======
+;mov ah, 0x0e    ; function number = 0Eh : Display Character on screen
+;mov al, '!'     ; AL = code of character to display. This is like the parameter to the interrupt.
+;int 0x10        ; call INT 10h, BIOS video service https://en.wikipedia.org/wiki/INT_10H
 
-mov ah, 0  ; Set video mode ...
-mov al, 3  ; .... to 3 ==> 80x25 16 bit colour - http://www.columbia.edu/~em36/wpdos/videomodes.txt - SeaBIOS used by qemu is limited to 0,1,2,3
+mov ah, 0x0  ; Set video mode subroutine...
+mov al, 3    ; Set to mode 3 ==> 80x25 16 bit colour - http://www.columbia.edu/~em36/wpdos/videomodes.txt - SeaBIOS used by qemu is limited to 0,1,2,3
 ;mov ax, 3h ; would have done the same.
 int 10h    ; Invoke the interrupt. This will now resize and clear the screen.
 
@@ -24,16 +24,16 @@ int 10h    ; Invoke the interrupt. This will now resize and clear the screen.
 ;int 10h
 
 ; Write something out using a loop
-mov si, msg ; The "si" register is one of the index registers. It contains the location of the screen we want to interate over and print.
-mov ah, 0xe
+mov si, msg ; The "si" register is one of the index registers. It contains the location of the string we want to iterate over and print.
+mov ah, 0xe ; function number 0xe : Display a character on screen.
 
 displayLoop:
-    lodsb ; Loads the value of the "single byte" (sb) pointed to by the "si" register into the "al" register then increment the value in the "si" register
+    lodsb ; Load the value of the single byte (sb) pointed to by the "si" register into the "al" register then increment the value in the "si" register
     ;mov al, 'H' ; no need to manually add our letter, as the lodsb command did this for us
-    or al,al ; Take the number in "al" and OR it with the number in "al" (and put the result back into "al" - this is default behaviour). Since OR'ing a number with itself won't change it, the value in "al" is never changed. However, if the result value is 0, the ZERO flag is set. This is a check for a NULL character in the output string.
+    or al,al ; Take the number in "al" and OR it with the number in "al" (which then puts the result back into "al"). Since OR'ing a number with itself won't change it, the value in "al" is never changed. However, if the result value is 0, the ZERO flag is set. This is a check for a NULL character in the output string.
     jz halt  ; If the ZERO flag it set, jump to the halt label.
-    int 10h
-    jmp displayLoop
+    int 10h  ; Call the interrupt to display the current letter.
+    jmp displayLoop ; Loop around and print every letter in the string.
 
 halt:
     cli ; stop all interrupts

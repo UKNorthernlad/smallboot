@@ -41,11 +41,11 @@ main:
     ;print message
     mov si, message
     call puts
-
+    
     hlt
 
 message:
-    db "Hello world" ,0
+    db "Hello world" ,0xa,0xd, 0
 
 
 times 510 - ($-$$) db 0

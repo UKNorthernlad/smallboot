@@ -1,5 +1,5 @@
-use16       ; product 16bit code
-org 0x7c00  ; assume code will be loaded into 0x7c00
+use16       ; produce 16 bit code
+org 0x7c00  ; assume code will be loaded at memory location 0x7c00. This is where the BIOS expects it to be.
 
 ; The BIOS has a number of interrupt routines that can perform tasks needed for startup, e.g. print on the screen.
 ; These can be triggered by either hardware or software calls with the "int" instruction.

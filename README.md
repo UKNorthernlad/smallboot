@@ -21,7 +21,17 @@ Add required dev tools:
 ```
 sudo apt install fasm nasm qemu mtools dosfstools
 ```
-You don't need both fasm & nasm but having them both might be useful in the future.
+>>> You don't need both fasm & nasm but having them both might be useful in the future.
+
+The QEmu emulator does not have any built-in support to display CPU debugging, therefore another emulator called Bochs can be used.
+* BOCHS = another emulator which has debugging support
+```
+sudo apt install bochs bochs-sdl bochsbios vgabios
+```
+
+>>> At time of writing, the Ubuntu package based on release 2.7 doesn't work correctly and displays "physical memory read error" when running (nor does the emulator display anything) - this seems to be documented at https://github.com/bochs-emu/Bochs/issues/50.
+
+>>> Download source from https://github.com/bochs-emu/Bochs/releases/tag/REL_2_7_FINAL and then run `configure --with-sdl2 --enable-debugger"
 
 ## Examples
 

@@ -6,8 +6,9 @@ floppy:  bootloader kernel
 	mkfs.fat -F 12 -n "Disk label" floppy.bin
 	# Write the bootloader into the first sector of the disk. This contains our manually contructed FAT12 header and executable code to print Hello.
 	dd if=bootloader/bootloader.bin of=floppy.bin conv=notrunc
-
-	mcopy -i floppy.bin bootloader/bootloader.bin "::bfwfs"
+	#mcopy -i floppy.bin kernel/kernel.bin "::kernel.bin"
+	# Write our kernel to the 2nd sector
+	dd if=README.md of=floppy.bin seek=1 bs=512 conv=notrunc
 
 bootloader:
 	fasm bootloader/bootloader.asm bootloader/bootloader.bin
@@ -15,10 +16,13 @@ bootloader:
 kernel:
 	fasm kernel/kernel.asm kernel/kernel.bin
 
-run:
+run: 
 	qemu-system-x86_64 --drive format=raw,file=floppy.bin
 
 clean:
-	rm bootloader/bootloader.bin
-	rm kernel/kernel.bin
-	rm floppy.bin
+	rm bootloader/*.bin
+	rm kernel/*.bin
+	rm *.bin
+
+debug:
+	bochs -f config

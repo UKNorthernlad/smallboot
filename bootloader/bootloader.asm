@@ -75,14 +75,142 @@ main:
     mov ss,ax ; stack segment 0
     mov sp, 0x7c00  ; stack grows downwards from where we are loaded in memory
 
+    ; read something from floppy disk
+    ; BIOS should set DL to drive number
+    mov [ebr_drive_number], dl
+
+    mov ax, 12      ; LBA=1, second sector from disk
+    mov cl, 1      ; Read 1 sector worth of data
+    mov bx, 0x7e00 ; bx will contain the memory location where we want the data loading into.
+    call disk_read
+    
     ;print message
     mov si, message
     call puts
-    
+
+    ;display loaded data
+    mov si, 0x7e00
+    call puts
+
+    cli
     hlt
 
-message:
-    db "Hello world" ,0xa,0xd, 0
+floppy_error:
+    mov si, message_read_failed
+    call puts
+    jmp wait_key_and_reboot
+
+wait_key_and_reboot:
+    mov ah, 0
+    int 16h  ; wait for keypress
+    jmp 0xffff:0    ; jump to beginning of BIOS, should reboot
+
+.halt:
+    cli
+    hlt
+
+;
+; Disk routines
+;
+
+;
+; Convert LBA address to CHS address
+; Parameters:
+;  - ax: LBA address
+; Returns:
+;   - cx [bits 0-5]: sector number
+;   - cx [bits 6-15]: cylinder
+;   - dh: head
+lba_to_chs:
+
+    push ax
+    push dx
+
+    xor dx, dx                          ; dx=0 - xor'ing anthing with itself returns 0.
+    div word [bdb_sectors_per_track]    ; ax = LBA / SectorsPerTrack
+    inc dx                              ; dx = (LBA % SectorsPerTrack + 1) = sector
+    mov cx, dx                          ; cx = sector
+    
+    xor dx, dx                          ; dx=0
+    div word [bdb_heads]                ; ax = (LBA / SectorsPerTrack) / Heads = cylinder
+                                        ; dx = (LBA / SectorsPerTrack) % Heads = head
+    mov dh, dl                          ; dh = head
+    mov ch, al                         ; ch = cylinder (lower 8 bits)
+    shl ah, 6
+    or cl, ah                           ; put upper 2 bits of cylinder in CL
+
+    pop ax
+    mov dl, al                         ; restore DL
+    pop ax
+    ret
+
+; Read sectors from disk
+; Parameters
+;  - ax: LBA address
+;  - cl: number of sectors to read (up to 128)
+;  - dl: drive number
+;  - es:bx: memory address where to store read data
+
+disk_read:
+
+    push ax
+    push bx
+    push cx
+    push dx
+    push di
+
+
+    push cx         ; save CL (number of sectors to read)
+    call lba_to_chs ; compute CHS
+    pop ax          ; AL = number of sectors to read
+
+    mov ah, 0x2     ; Subroutine to read sectors from disk
+    mov di, 3       ; for real world floppies, the read sometimes fails. We will try 3 times to read the data.
+
+.retry:
+    pusha           ; save all registers, we don't know which the bios modifies
+    stc             ; set carry flag, some BIOS'es don't set it
+    int 0x13        ; Perform read. If the carry flag is cleared then the read = sccess
+    jnc .done       ; jump if carry not set
+
+   ; read failed
+    popa
+    call disk_reset
+    
+    dec di 
+    test di,di
+    jnz .retry
+
+.fail:
+    ; all attempts to read the disk have failed
+    jmp floppy_error
+
+
+.done:
+    popa
+
+    pop di
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+
+; Reset disk controller
+; Parameter:
+;  dl: drive number
+disk_reset:
+    pusha
+    mov ah, 0  ; routine to reset the disk
+    stc
+    int 13h
+    jc floppy_error
+    popa
+    ret
+
+
+message:             db "Bootloader running....." ,ENDLINE, 0
+message_read_failed: db "Read from disk failed." ,ENDLINE, 0
 
 
 times 510 - ($-$$) db 0

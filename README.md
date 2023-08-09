@@ -53,3 +53,7 @@ dd if=/dev/zero of=floppy.bin bs=512 count=2880
 mkfs.fat -F 12 -n "Disk label" floppy.bin
 mcopy -i floppy.bin README.md "::README.md"
 ```
+
+
+## Useful links
+https://wiki.osdev.org

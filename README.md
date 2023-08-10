@@ -1,6 +1,6 @@
 # Basic boot loader floppy
 
-Inital basic examples aken from:
+Inital basic examples taken from:
 * https://www.youtube.com/watch?v=YBlJvoXAXDA
 * https://www.youtube.com/@sudocpp/videos
 

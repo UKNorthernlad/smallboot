@@ -8,7 +8,7 @@ floppy:  bootloader kernel
 	dd if=bootloader/bootloader.bin of=floppy.bin conv=notrunc
 	#mcopy -i floppy.bin kernel/kernel.bin "::kernel.bin"
 	# Write our kernel to the 2nd sector
-	dd if=README.md of=floppy.bin seek=1 bs=512 conv=notrunc
+	dd if=kernel/kernel.bin of=floppy.bin seek=1 bs=512 conv=notrunc
 
 bootloader:
 	fasm bootloader/bootloader.asm bootloader/bootloader.bin

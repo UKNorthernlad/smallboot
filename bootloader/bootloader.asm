@@ -79,18 +79,23 @@ main:
     ; BIOS should set DL to drive number
     mov [ebr_drive_number], dl
 
-    mov ax, 12      ; LBA=1, second sector from disk
+    mov ax, 1     ; LBA=1, second sector from disk
     mov cl, 1      ; Read 1 sector worth of data
     mov bx, 0x7e00 ; bx will contain the memory location where we want the data loading into.
     call disk_read
+
+    ;test - write letter A to memory location
+    ;mov bx, 0x7e00
+    ;mov byte[bx], 0x41
+    ;display loaded data
+    ;mov si, 0x7e00
+    ;call puts
     
     ;print message
     mov si, message
     call puts
 
-    ;display loaded data
-    mov si, 0x7e00
-    call puts
+    jmp 0x7e00
 
     cli
     hlt
@@ -152,13 +157,11 @@ lba_to_chs:
 ;  - es:bx: memory address where to store read data
 
 disk_read:
-
     push ax
     push bx
     push cx
     push dx
     push di
-
 
     push cx         ; save CL (number of sectors to read)
     call lba_to_chs ; compute CHS

@@ -22,7 +22,7 @@ Add required dev tools:
 ```
 sudo apt install fasm nasm qemu mtools dosfstools
 ```
->>> You don't need both fasm & nasm but having them both might be useful in the future.
+> You don't need both fasm & nasm but having them both might be useful in the future.
 
 The QEmu emulator does not have any built-in support to display CPU debugging, therefore another emulator called Bochs can be used.
 ```

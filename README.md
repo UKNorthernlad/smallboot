@@ -34,27 +34,28 @@ sudo apt install bochs bochs-sdl bochsbios vgabios
 
 Print a basic "hello world" message by booting of a disk.
 ```
-cd basicexamples
+cd 0-basicasmexamples
 make hello
 make runhello
 ```
 
 Basic ways to manipulate memory 
 ```
-cd basicexamples
+cd 0-basicasmexamples
 make memory
 make memoryrun
 ```
 
 Print a basic "hello world" message by booting of a disk but using a function call and stack.
 ```
-cd basicexamples
+cd 0-basicasmexamples
 make hellocall
 make runhellocall
 ```
 
 Boot off a FAT12 disk, execute a bootloader which then loads a kernel (which just prints "hello world")
 ```
+cd 1-boot-kernel-from-2nd-sector
 make
 make run
 ```
